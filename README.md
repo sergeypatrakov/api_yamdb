@@ -112,5 +112,11 @@ http://127.0.0.1:8000/admin
 ### Над проектом работали:
 
 [Максим Бризганов](https://github.com/Tapochekmira) | Разработчик, контент пользователей: Category, Genre, Title
+
+</b>
+
 [Элмер Ефлов](https://github.com/nm0i) | Разработчик, кастомная модель User + Review, Comment
+
+</b>
+
 [Сергей Патраков](https://github.com/sergeypatrakov) | Разработчик, модель администратора Admin + регистрация и аутентификация пользователей
