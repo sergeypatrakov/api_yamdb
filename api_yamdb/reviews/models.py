@@ -8,6 +8,8 @@ from .validators import validate_correct_year
 
 REVIEW_ORDERING: Tuple[str] = ("-pub_date",)
 COMMENT_ORDERING: Tuple[str] = ("-pub_date",)
+REVIEW_TRUNK_LIMIT: int = 16
+COMMENT_TRUNK_LIMIT: int = 16
 
 
 class Category(models.Model):
@@ -102,7 +104,9 @@ class Review(models.Model):
         verbose_name='Автор',
     )
     score = models.IntegerField(
-        default=10, validators=[MaxValueValidator(10), MinValueValidator(1)]
+        default=10,
+        validators=[MaxValueValidator(10),
+                    MinValueValidator(1)]
     )
     pub_date = models.DateTimeField(
         verbose_name='Дата создания',
@@ -114,6 +118,9 @@ class Review(models.Model):
         ordering = REVIEW_ORDERING
         verbose_name = 'Ревью'
         verbose_name_plural = 'Ревью'
+
+    def __str__(self):
+        return self.text[:REVIEW_TRUNK_LIMIT]
 
 
 class Comment(models.Model):
@@ -142,3 +149,6 @@ class Comment(models.Model):
         ordering = COMMENT_ORDERING
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
+
+    def __str__(self):
+        return self.text[:COMMENT_TRUNK_LIMIT]
