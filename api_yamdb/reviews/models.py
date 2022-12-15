@@ -23,7 +23,22 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    pass
+    name = models.CharField(
+        verbose_name='Название',
+        max_length=256,
+    )
+    slug = models.SlugField(
+        verbose_name='Строка идентификатор жанра',
+        unique=True,
+        max_length=50,
+    )
+
+    class Meta:
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
+
+    def __str__(self):
+        return self.name
 
 
 class Title(models.Model):
