@@ -90,7 +90,7 @@ class Review(models.Model):
         Title,
         related_name='reviews',
         verbose_name='Произведение',
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
     )
     text = models.TextField(
         verbose_name='Текст ревью',
