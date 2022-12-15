@@ -3,7 +3,7 @@ from typing import Tuple
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-USER_ROLES: Tuple[Tuple[str]] = (
+USER_ROLES: Tuple[Tuple[str, ...], ...] = (
     ("user", "Аутентифицированный пользователь"),
     ("moderator", "Модератор"),
     ("admin", "Администратор"),
