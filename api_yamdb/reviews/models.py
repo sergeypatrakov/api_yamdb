@@ -1,6 +1,7 @@
 from django.db import models
 
 from users.models import User
+from .validators import validate_correct_year
 
 
 class Category(models.Model):
@@ -42,7 +43,40 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    pass
+    name = models.CharField(
+        verbose_name='Название произведения',
+        max_length=256,
+    )
+    year = models.IntegerField(
+        verbose_name='Год создания произведения',
+        validators=[validate_correct_year]
+    )
+    descriptions = models.TextField(
+        verbose_name='Описание произведения',
+        blank=True,
+        null=True
+    )
+    genre = models.ForeignKey(
+        Genre,
+        related_name='titles',
+        verbose_name='Жанр',
+        on_delete=models.SET_NULL,
+        null=True
+    )
+    category = models.ForeignKey(
+        Category,
+        related_name='titles',
+        verbose_name='Категория',
+        on_delete=models.SET_NULL,
+        null=True
+    )
+
+    class Meta:
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
+
+    def __str__(self):
+        return self.name
 
 
 class Review(models.Model):
