@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from django.code.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from users.models import User
 
@@ -85,7 +85,7 @@ class Title(models.Model):
         return self.name
 
 
-class Review(models.CreatedModel):
+class Review(models.Model):
     title_id = models.ForeignKey(
         Title,
         related_name='reviews',
@@ -104,6 +104,11 @@ class Review(models.CreatedModel):
     score = models.IntegerField(
         default=10, validators=[MaxValueValidator(10), MinValueValidator(1)]
     )
+    pub_date = models.DateTimeField(
+        verbose_name='Дата создания',
+        auto_now_add=True,
+        db_index=True
+    )
 
     class Meta:
         ordering = REVIEW_ORDERING
@@ -111,7 +116,7 @@ class Review(models.CreatedModel):
         verbose_name_plural = 'Ревью'
 
 
-class Comment(models.CreatedModel):
+class Comment(models.Model):
     review_id = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
@@ -126,6 +131,11 @@ class Comment(models.CreatedModel):
         on_delete=models.CASCADE,
         related_name="comments",
         verbose_name='Автор',
+    )
+    pub_date = models.DateTimeField(
+        verbose_name='Дата создания',
+        auto_now_add=True,
+        db_index=True
     )
 
     class Meta:
