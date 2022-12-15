@@ -1,7 +1,13 @@
-from django.db import models
+from typing import Tuple
 
+from django.code.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 from users.models import User
+
 from .validators import validate_correct_year
+
+REVIEW_ORDERING: Tuple[str] = ("-pub_date",)
+COMMENT_ORDERING: Tuple[str] = ("-pub_date",)
 
 
 class Category(models.Model):
@@ -79,9 +85,50 @@ class Title(models.Model):
         return self.name
 
 
-class Review(models.Model):
-    pass
+class Review(models.CreatedModel):
+    title_id = models.ForeignKey(
+        Title,
+        related_name='reviews',
+        verbose_name='Произведение',
+        on_delete=models.SET_NULL,
+    )
+    text = models.TextField(
+        verbose_name='Текст ревью',
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+        verbose_name='Автор',
+    )
+    score = models.IntegerField(
+        default=10, validators=[MaxValueValidator(10), MinValueValidator(1)]
+    )
+
+    class Meta:
+        ordering = REVIEW_ORDERING
+        verbose_name = 'Ревью'
+        verbose_name_plural = 'Ревью'
 
 
-class Comment(models.Model):
-    pass
+class Comment(models.CreatedModel):
+    review_id = models.ForeignKey(
+        Review,
+        on_delete=models.CASCADE,
+        related_name='comments',
+        verbose_name='Ревью'
+    )
+    text = models.TextField(
+        verbose_name="Текст Комментария",
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="comments",
+        verbose_name='Автор',
+    )
+
+    class Meta:
+        ordering = COMMENT_ORDERING
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
