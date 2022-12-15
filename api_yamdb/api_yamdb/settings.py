@@ -1,8 +1,8 @@
 import os
 from datetime import timedelta
-from dotenv import find_dotenv, load_dotenv
 from pathlib import Path
 
+from dotenv import find_dotenv, load_dotenv
 
 load_dotenv(find_dotenv())
 
@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'djoser',
     'reviews.apps.ReviewsConfig',
     'api.apps.ApiConfig',
