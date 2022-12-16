@@ -1,7 +1,15 @@
-from django.db import models
+from typing import Tuple
 
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 from users.models import User
+
 from .validators import validate_correct_year
+
+REVIEW_ORDERING: Tuple[str] = ("-pub_date",)
+COMMENT_ORDERING: Tuple[str] = ("-pub_date",)
+REVIEW_TRUNK_LIMIT: int = 16
+COMMENT_TRUNK_LIMIT: int = 16
 
 
 class Category(models.Model):
@@ -80,8 +88,67 @@ class Title(models.Model):
 
 
 class Review(models.Model):
-    pass
+    title_id = models.ForeignKey(
+        Title,
+        related_name='reviews',
+        verbose_name='Произведение',
+        on_delete=models.CASCADE,
+    )
+    text = models.TextField(
+        verbose_name='Текст ревью',
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+        verbose_name='Автор',
+    )
+    score = models.IntegerField(
+        default=10,
+        validators=[MaxValueValidator(10),
+                    MinValueValidator(1)]
+    )
+    pub_date = models.DateTimeField(
+        verbose_name='Дата создания',
+        auto_now_add=True,
+        db_index=True
+    )
+
+    class Meta:
+        ordering = REVIEW_ORDERING
+        verbose_name = 'Ревью'
+        verbose_name_plural = 'Ревью'
+
+    def __str__(self):
+        return self.text[:REVIEW_TRUNK_LIMIT]
 
 
 class Comment(models.Model):
-    pass
+    review_id = models.ForeignKey(
+        Review,
+        on_delete=models.CASCADE,
+        related_name='comments',
+        verbose_name='Ревью'
+    )
+    text = models.TextField(
+        verbose_name="Текст Комментария",
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="comments",
+        verbose_name='Автор',
+    )
+    pub_date = models.DateTimeField(
+        verbose_name='Дата создания',
+        auto_now_add=True,
+        db_index=True
+    )
+
+    class Meta:
+        ordering = COMMENT_ORDERING
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
+
+    def __str__(self):
+        return self.text[:COMMENT_TRUNK_LIMIT]
