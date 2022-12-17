@@ -9,11 +9,10 @@ class TitleAdmin(admin.ModelAdmin):
         'pk',
         'name',
         'year',
-        'descriptions',
-        'genre',
+        'description',
         'category',
     )
-    list_editable = ('genre', 'category',)
+    list_editable = ('category',)
     search_fields = ('name',)
     list_filter = ('year',)
     empty_value_display = '-пусто-'
