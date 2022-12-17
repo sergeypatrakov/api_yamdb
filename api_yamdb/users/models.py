@@ -22,7 +22,7 @@ class User(AbstractUser):
         verbose_name="Роль",
         max_length=32,
         choices=ROLE_CHOICES,
-        default="user",
+        default=USER_ROLE,
     )
 
     @property
