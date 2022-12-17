@@ -1,4 +1,3 @@
-import datetime
 import sqlite3
 
 import pandas
@@ -12,7 +11,7 @@ def main():
         ("static/data/review.csv", "reviews_review"),
         ("static/data/category.csv", "reviews_category"),
         ("static/data/comments.csv", "reviews_comment"),
-        ("static/data/genre_title.csv", "reviews_genre_title"),
+        ("static/data/genre_title.csv", "reviews_genretitle"),
         ("static/data/genre.csv", "reviews_genre"),
     )
 
@@ -27,25 +26,23 @@ def main():
                 columns={
                     "category": "category_id",
                     "author": "author_id",
-                    "review_id": "review_id_id",
-                    "title_id": "title_id_id",
                 },
                 inplace=True,
             )
             df.columns
-            # if table == "users_user":
-            #     new_df = df.assign(
-            #         password="null",
-            #         is_admin=False,
-            #         is_moderator=False,
-            #         is_user=True,
-            #         date_joined=0,
-            #         first_name="null",
-            #         last_name="null",
-            #         bio="null",
-            #     )
-            # else:
-            new_df = df
+            if table == "users_user":
+                new_df = df.assign(
+                    password="---",
+                    is_superuser=False,
+                    is_staff=False,
+                    is_active=True,
+                    date_joined=0,
+                    first_name="null",
+                    last_name="null",
+                    bio="null",
+                )
+            else:
+                new_df = df
             new_df.to_sql(table, connection, if_exists="append", index=False)
             print(f"OK: {path}")
         except Exception as error:
