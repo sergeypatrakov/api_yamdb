@@ -59,18 +59,24 @@ class Title(models.Model):
         verbose_name='Год создания произведения',
         validators=[validate_correct_year]
     )
-    descriptions = models.TextField(
+    description = models.TextField(
         verbose_name='Описание произведения',
         blank=True,
         null=True
     )
-    genre = models.ForeignKey(
+    genre = models.ManyToManyField(
         Genre,
-        related_name='titles',
+        blank=True,
+        through='GenreTitle',
         verbose_name='Жанр',
-        on_delete=models.SET_NULL,
-        null=True
     )
+    # genre = models.ForeignKey(
+    #     Genre,
+    #     related_name='titles',
+    #     verbose_name='Жанр',
+    #     on_delete=models.SET_NULL,
+    #     null=True
+    # )
     category = models.ForeignKey(
         Category,
         related_name='titles',
@@ -87,8 +93,13 @@ class Title(models.Model):
         return self.name
 
 
+class GenreTitle(models.Model):
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
+    title = models.ForeignKey(Title, on_delete=models.CASCADE)
+
+
 class Review(models.Model):
-    title_id = models.ForeignKey(
+    title = models.ForeignKey(
         Title,
         related_name='reviews',
         verbose_name='Произведение',
@@ -124,7 +135,7 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
-    review_id = models.ForeignKey(
+    review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
         related_name='comments',
