@@ -2,8 +2,8 @@ from typing import Tuple
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from users.models import User
 
+from users.models import User
 from .validators import validate_correct_year
 
 REVIEW_ORDERING: Tuple[str] = ("-pub_date",)
@@ -59,17 +59,17 @@ class Title(models.Model):
         verbose_name='Год создания произведения',
         validators=[validate_correct_year]
     )
-    descriptions = models.TextField(
+    description = models.TextField(
         verbose_name='Описание произведения',
         blank=True,
         null=True
     )
-    genre = models.ForeignKey(
+    genre = models.ManyToManyField(
         Genre,
-        related_name='titles',
-        verbose_name='Жанр',
-        on_delete=models.SET_NULL,
-        null=True
+        related_name='posts',
+        verbose_name='Жанры',
+        null=True,
+        through='TitleGenre',
     )
     category = models.ForeignKey(
         Category,
@@ -152,3 +152,16 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.text[:COMMENT_TRUNK_LIMIT]
+
+
+class TitleGenre(models.Model):
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        verbose_name='Произведение'
+    )
+    genre = models.ForeignKey(
+        Genre,
+        on_delete=models.CASCADE,
+        verbose_name='Жанр',
+    )
