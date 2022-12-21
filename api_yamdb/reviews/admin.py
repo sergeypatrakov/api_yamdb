@@ -5,15 +5,14 @@ from .models import Category, Comment, Genre, Review, Title
 
 @admin.register(Title)
 class TitleAdmin(admin.ModelAdmin):
+    raw_id_fields = ('genre',)
     list_display = (
         'pk',
         'name',
-        'year',
-        'descriptions',
-        'genre',
         'category',
+        'year',
+        'description',
     )
-    list_editable = ('genre', 'category',)
     search_fields = ('name',)
     list_filter = ('year',)
     empty_value_display = '-пусто-'
