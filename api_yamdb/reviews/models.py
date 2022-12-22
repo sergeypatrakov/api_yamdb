@@ -71,13 +71,6 @@ class Title(models.Model):
         null=True,
         through='TitleGenre',
     )
-    # genre = models.ForeignKey(
-    #     Genre,
-    #     related_name='titles',
-    #     verbose_name='Жанр',
-    #     on_delete=models.SET_NULL,
-    #     null=True
-    # )
     category = models.ForeignKey(
         Category,
         related_name='titles',
