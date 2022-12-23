@@ -1,40 +1,27 @@
 from http import HTTPStatus
 
+from django import db
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import permissions
-from rest_framework import viewsets, filters
-from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework.decorators import (
-    action,
-    api_view,
-    permission_classes
-)
+from rest_framework import filters, permissions, viewsets
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-
+from rest_framework_simplejwt.tokens import AccessToken
 from reviews.filters import GenreFilter
 from reviews.models import Category, Genre, Review, Title
 from users.models import User
+
 from .mixins import CreateListDeleteViewSet
-from .permissions import (
-    AdminOrReadOnly,
-    AuthorAdminModeratorOrReadOnly,
-    IsAdminPermission
-)
-from .serializers import (
-    CategorySerializer,
-    CommentSerializer,
-    GenreSerializer,
-    GetCodeSerializer,
-    GetTitleSerializer,
-    GetTokenSerializer,
-    PostPutPatchDeleteTitleSerializer,
-    ReviewSerializer,
-    UserSerializer,
-)
+from .permissions import (AdminOrReadOnly, AuthorAdminModeratorOrReadOnly,
+                          IsAdminPermission)
+from .serializers import (CategorySerializer, CommentSerializer,
+                          GenreSerializer, GetCodeSerializer,
+                          GetTitleSerializer, GetTokenSerializer,
+                          PostPutPatchDeleteTitleSerializer, ReviewSerializer,
+                          UserSerializer)
 
 
 class CategoryViewSet(CreateListDeleteViewSet):
@@ -56,7 +43,8 @@ class GenreViewSet(CreateListDeleteViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
+    queryset = Title.objects.annotate(
+        rating=db.models.Avg('reviews__score'))
     permission_classes = (AdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = GenreFilter
@@ -101,6 +89,7 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsAdminPermission)
     lookup_field = 'username'
     search_fields = ('username',)
+    http_method_names = ['get', 'post', 'patch']
 
     @action(
         ['GET', 'PATCH'], permission_classes=(IsAuthenticated,),

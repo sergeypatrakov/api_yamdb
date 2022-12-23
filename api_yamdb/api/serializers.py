@@ -1,14 +1,7 @@
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-
-from reviews.models import (
-    Category,
-    Comment,
-    Genre,
-    Review,
-    Title,TitleGenre
-)
+from reviews.models import Category, Comment, Genre, Review, Title, TitleGenre
 from users.models import User
 
 
@@ -27,7 +20,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class GetTitleSerializer(serializers.ModelSerializer):
-    rating = serializers.SerializerMethodField()
+    rating = serializers.IntegerField(read_only=True)
     genre = GenreSerializer(
         many=True,
     )
@@ -35,7 +28,8 @@ class GetTitleSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = ('id', 'name', 'year', 'rating', 'description', 'genre', 'category')
+        fields = ("id", "name", "year", "rating",
+                  "description", "genre", "category")
         model = Title
 
     def get_rating(self, obj):
