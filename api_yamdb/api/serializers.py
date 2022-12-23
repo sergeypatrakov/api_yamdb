@@ -1,6 +1,7 @@
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 from reviews.models import Category, Comment, Genre, Review, Title, TitleGenre
 from users.models import User
 
@@ -115,6 +116,14 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
 
+    email = serializers.EmailField(
+        validators=[
+            UniqueValidator(queryset=User.objects.all()),
+        ],
+        max_length=254,
+        required=True,
+    )
+
     class Meta:
         fields = (
             'username',
@@ -139,14 +148,6 @@ class UserSerializer(serializers.ModelSerializer):
                 'Пользователь с таким именем уже зарегистрирован'
             )
         return username
-
-    def validate_email(self, email):
-        duplicated_email = User.objects.filter(email=email).exists()
-        if duplicated_email:
-            raise serializers.ValidationError(
-                'Пользователь с таким email уже зарегистрирован'
-            )
-        return email
 
     def nonadmin_update(self, instance, validated_data):
         validated_data.pop('role', None)
