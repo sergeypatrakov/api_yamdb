@@ -120,8 +120,14 @@ class Review(models.Model):
 
     class Meta:
         ordering = REVIEW_ORDERING
-        verbose_name = 'Ревью'
-        verbose_name_plural = 'Ревью'
+        verbose_name = "Ревью"
+        verbose_name_plural = "Ревью"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["author", "title"],
+                name="Только один отзыв на произведение от автора.",
+            )
+        ]
 
     def __str__(self):
         return self.text[:REVIEW_TRUNK_LIMIT]
