@@ -21,12 +21,10 @@ itypes==1.2.0
 Jinja2==3.1.2
 MarkupPy==1.14
 MarkupSafe==2.1.1
-numpy==1.23.5
 oauthlib==3.2.2
 odfpy==1.4.1
 openpyxl==3.0.10
 packaging==22.0
-pandas==1.5.2
 pluggy==0.13.1
 py==1.11.0
 pycparser==2.21
