@@ -1,21 +1,27 @@
+import os
 import sqlite3
-from typing import Dict, Tuple
+from typing import Dict, List
 
 import pandas
+from api_yamdb.settings import BASE_DIR, DATABASES
 from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
+
     def handle(self, *args, **kwargs):
-        connection = sqlite3.connect("db.sqlite3")
-        FILE_TABLE_PAIRS: Tuple[Tuple[str, str]] = (
-            ("static/data/titles.csv", "reviews_title"),
-            ("static/data/users.csv", "users_user"),
-            ("static/data/review.csv", "reviews_review"),
-            ("static/data/category.csv", "reviews_category"),
-            ("static/data/comments.csv", "reviews_comment"),
-            ("static/data/genre_title.csv", "reviews_genretitle"),
-            ("static/data/genre.csv", "reviews_genre"),
+        connection = sqlite3.connect(DATABASES["default"]["NAME"])
+        FILE_TABLE_PAIRS: List = map(
+            lambda x: (os.path.join(BASE_DIR, x[0]), x[1]),
+            (
+                ("static/data/titles.csv", "reviews_title"),
+                ("static/data/users.csv", "users_user"),
+                ("static/data/review.csv", "reviews_review"),
+                ("static/data/category.csv", "reviews_category"),
+                ("static/data/comments.csv", "reviews_comment"),
+                ("static/data/genre_title.csv", "reviews_genretitle"),
+                ("static/data/genre.csv", "reviews_genre"),
+            ),
         )
         COLUMN_RENAME_MAP: Dict[str, str] = {
             "category": "category_id",

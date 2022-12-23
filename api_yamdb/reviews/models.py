@@ -2,8 +2,8 @@ from typing import Tuple
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-
 from users.models import User
+
 from .validators import validate_correct_year
 
 REVIEW_ORDERING: Tuple[str] = ("-pub_date",)
@@ -68,16 +68,8 @@ class Title(models.Model):
         Genre,
         related_name='posts',
         verbose_name='Жанры',
-        null=True,
         through='TitleGenre',
     )
-    # genre = models.ForeignKey(
-    #     Genre,
-    #     related_name='titles',
-    #     verbose_name='Жанр',
-    #     on_delete=models.SET_NULL,
-    #     null=True
-    # )
     category = models.ForeignKey(
         Category,
         related_name='titles',
