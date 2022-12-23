@@ -125,32 +125,22 @@ class UserSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = (
-            'username',
-            'email',
-            'first_name',
-            'last_name',
-            'bio',
-            'role'
-        )
+        fields = ("username", "email", "first_name",
+                  "last_name", "bio", "role")
         model = User
 
     def validate_username(self, username):
-        if username == 'me':
-            raise serializers.ValidationError(
-                'Недопустимое имя пользователя'
-            )
-        duplicated_username = User.objects.filter(
-            username=username
-        ).exists()
+        if username == "me":
+            raise serializers.ValidationError("Недопустимое имя пользователя")
+        duplicated_username = User.objects.filter(username=username).exists()
         if duplicated_username:
             raise serializers.ValidationError(
-                'Пользователь с таким именем уже зарегистрирован'
+                "Пользователь с таким именем уже зарегистрирован"
             )
         return username
 
     def nonadmin_update(self, instance, validated_data):
-        validated_data.pop('role', None)
+        validated_data.pop("role", None)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
@@ -165,10 +155,7 @@ class GetCodeSerializer(serializers.Serializer):
         max_length=254,
         required=True,
     )
-    username = serializers.RegexField(
-        regex=r'^[\w.@+-]+\Z',
-        max_length=150
-    )
+    username = serializers.RegexField(regex=r"^[\w.@+-]+\Z", max_length=150)
 
     def validate_username(self, username):
         return UserSerializer.validate_username(self, username)
