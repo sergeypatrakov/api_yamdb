@@ -89,10 +89,10 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsAdminPermission)
     lookup_field = 'username'
     search_fields = ('username',)
-    http_method_names = ['get', 'post', 'patch']
+    http_method_names = ['get', 'post', 'patch', 'delete']
 
     @action(
-        ['GET', 'PATCH'], permission_classes=(IsAuthenticated,),
+        ['GET', 'PATCH'], permission_classes=(IsAuthenticated, ),
         detail=False, url_path='me'
     )
     def me_user(self, request):

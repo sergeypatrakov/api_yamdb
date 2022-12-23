@@ -125,7 +125,6 @@ class UserSerializer(serializers.ModelSerializer):
             'role'
         )
         model = User
-        lookup_field = 'username'
 
     def validate_username(self, username):
         if username == 'me':
