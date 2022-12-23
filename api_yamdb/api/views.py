@@ -43,8 +43,7 @@ class GenreViewSet(CreateListDeleteViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.annotate(
-        rating=db.models.Avg('reviews__score'))
+    queryset = Title.objects.annotate(rating=db.models.Avg("reviews__score"))
     permission_classes = (AdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = GenreFilter
@@ -84,17 +83,19 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all().order_by('-id')
+    queryset = User.objects.all().order_by("-id")
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated, IsAdminPermission)
     filter_backends = (filters.SearchFilter,)
-    lookup_field = 'username'
-    search_fields = ('username',)
-    http_method_names = ['get', 'post', 'patch', 'delete']
+    lookup_field = "username"
+    search_fields = ("username",)
+    http_method_names = ["get", "post", "patch", "delete"]
 
     @action(
-        ['GET', 'PATCH'], permission_classes=(IsAuthenticated, ),
-        detail=False, url_path='me'
+        ["GET", "PATCH"],
+        permission_classes=(IsAuthenticated,),
+        detail=False,
+        url_path="me",
     )
     def me_user(self, request):
         if not request.data:
@@ -104,12 +105,10 @@ class UserViewSet(viewsets.ModelViewSet):
             request.user, data=request.data, partial=True
         )
         serializer.is_valid(raise_exception=True)
-        if request.user.role == 'admin':
+        if request.user.role == "admin":
             serializer.update(request.user, serializer.validated_data)
         else:
-            serializer.nonadmin_update(
-                request.user, serializer.validated_data
-            )
+            serializer.nonadmin_update(request.user, serializer.validated_data)
         return Response(serializer.data, status=HTTPStatus.OK)
 
 
