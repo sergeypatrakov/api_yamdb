@@ -158,7 +158,13 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class GetCodeSerializer(serializers.Serializer):
-    email = serializers.EmailField(max_length=254, required=True)
+    email = serializers.EmailField(
+        validators=[
+            UniqueValidator(queryset=User.objects.all()),
+        ],
+        max_length=254,
+        required=True,
+    )
     username = serializers.RegexField(
         regex=r'^[\w.@+-]+\Z',
         max_length=150
@@ -166,9 +172,6 @@ class GetCodeSerializer(serializers.Serializer):
 
     def validate_username(self, username):
         return UserSerializer.validate_username(self, username)
-
-    def validate_email(self, email):
-        return UserSerializer.validate_email(self, email)
 
 
 class GetTokenSerializer(serializers.Serializer):
