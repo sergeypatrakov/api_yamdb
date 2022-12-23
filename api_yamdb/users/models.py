@@ -13,7 +13,10 @@ class User(AbstractUser):
         (MODERATOR_ROLE, "Модератор"),
         (ADMIN_ROLE, "Администратор"),
     )
-
+    confirmation_code = models.CharField(
+        max_length=120,
+        default='000000'
+    )
     bio = models.TextField(
         verbose_name="Биография",
         blank=True,
