@@ -9,16 +9,22 @@ from users.models import User
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('name', 'slug',)
+        fields = (
+            "name",
+            "slug",
+        )
         model = Category
-        lookup_field = 'slug'
+        lookup_field = "slug"
 
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('name', 'slug',)
+        fields = (
+            "name",
+            "slug",
+        )
         model = Genre
-        lookup_field = 'slug'
+        lookup_field = "slug"
 
 
 class GetTitleSerializer(serializers.ModelSerializer):
@@ -37,7 +43,7 @@ class GetTitleSerializer(serializers.ModelSerializer):
     def get_rating(self, obj):
         if not Review.objects.filter(title_id=obj.id):
             return None
-        return Review.objects.aggregate(Avg('score'))
+        return Review.objects.aggregate(Avg("score"))
 
 
 class PostPutPatchDeleteTitleSerializer(serializers.ModelSerializer):
@@ -52,60 +58,51 @@ class PostPutPatchDeleteTitleSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = ('id', 'name', 'year', 'description', 'genre', 'category')
+        fields = ("id", "name", "year", "description", "genre", "category")
         model = Title
 
     def create(self, validated_data):
-        genres = validated_data.pop('genre')
+        genres = validated_data.pop("genre")
         title = Title.objects.create(**validated_data)
 
         for genre in genres:
-            TitleGenre.objects.create(
-                genre=genre,
-                title=title
-            )
+            TitleGenre.objects.create(genre=genre, title=title)
 
         return title
 
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
-        slug_field='username',
+        slug_field="username",
         read_only=True,
         default=serializers.CurrentUserDefault()
     )
     title = serializers.SlugRelatedField(
-        slug_field='id',
-        many=False,
-        read_only=True
-    )
+        slug_field="id", many=False, read_only=True)
 
     class Meta:
         model = Review
-        fields = '__all__'
+        fields = "__all__"
 
     def validate(self, data):
-        if self.context['request'].method != 'POST':
+        if self.context["request"].method != "POST":
             return data
         title = get_object_or_404(
-            Title, pk=self.context['view'].kwargs.get('title_id')
-        )
-        author = self.context['request'].user
+            Title, pk=self.context["view"].kwargs.get("title_id"))
+        author = self.context["request"].user
         if Review.objects.filter(title_id=title, author=author).exists():
-            raise serializers.ValidationError(
-                'Вы уже оставляли отзыв'
-            )
+            raise serializers.ValidationError("Вы уже оставляли отзыв")
         return data
 
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
-        slug_field='username',
+        slug_field="username",
         read_only=True,
         default=serializers.CurrentUserDefault()
     )
     review = serializers.SlugRelatedField(
-        slug_field='text',
+        slug_field="text",
         many=False,
         read_only=True
     )
@@ -160,14 +157,14 @@ class GetCodeSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         try:
-            user = User.objects.get(username=validated_data['username'])
+            user = User.objects.get(username=validated_data["username"])
         except User.DoesNotExist:
             user = User.objects.create_user(**validated_data)
         return user
 
     def validate(self, data):
 
-        if data["email"] and data["username"]:
+        if data.get("email") and data.get("username"):
             if (
                 User.objects.filter(email=data["email"]).exists()
                 and not User.objects.filter(username=data["username"]).exists()
