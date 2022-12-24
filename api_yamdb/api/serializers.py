@@ -149,16 +149,40 @@ class UserSerializer(serializers.ModelSerializer):
 
 class GetCodeSerializer(serializers.Serializer):
     email = serializers.EmailField(
-        validators=[
-            UniqueValidator(queryset=User.objects.all()),
-        ],
         max_length=254,
         required=True,
     )
     username = serializers.RegexField(regex=r"^[\w.@+-]+\Z", max_length=150)
 
+    def create(self, validated_data):
+        try:
+            user = User.objects.get(username=validated_data['username'])
+        except User.DoesNotExist:
+            user = User.objects.create_user(**validated_data)
+        return user
+
+    def validate(self, data):
+
+        if data["email"] and data["username"]:
+            if (
+                User.objects.filter(email=data["email"]).exists()
+                and not User.objects.filter(username=data["username"]).exists()
+            ):
+                raise serializers.ValidationError(
+                    "Недопустимая комбинация username и email."
+                )
+            if User.objects.filter(username=data["username"]).exists() and (
+                User.objects.get(
+                    username=data["username"]).email != data["email"]
+            ):
+                raise serializers.ValidationError(
+                    "Email не соответсвует пользователю.")
+        return data
+
     def validate_username(self, username):
-        return UserSerializer.validate_username(self, username)
+        if username == "me":
+            raise serializers.ValidationError("Недопустимое имя пользователя")
+        return username
 
 
 class GetTokenSerializer(serializers.Serializer):

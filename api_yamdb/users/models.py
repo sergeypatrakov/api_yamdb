@@ -28,6 +28,14 @@ class User(AbstractUser):
         default=USER_ROLE,
     )
 
+    constraints = [
+        models.UniqueConstraint(
+            fields=["email", "username"],
+            name="Только один пользователь на email."
+        )
+    ]
+
+
     @property
     def is_user(self):
         return self.role == User.USER_ROLE

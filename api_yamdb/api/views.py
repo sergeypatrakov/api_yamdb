@@ -117,18 +117,14 @@ class UserViewSet(viewsets.ModelViewSet):
 def get_confirmation_code(request):
     """Получить код подтверждения на указанный email"""
     serializer = GetCodeSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    email = serializer.validated_data.get('email')
-    username = serializer.validated_data.get('username')
     try:
-        user, exist = User.objects.get_or_create(
-            username=username,
-            email=email,
-            is_active=False
-        )
+        serializer.is_valid(raise_exception=True)
     except Exception:
-        return Response(request.data,
+        return Response(serializer.errors,
                         status=HTTPStatus.BAD_REQUEST)
+    user = serializer.save()
+    email = user.email
+    username = user.username
     confirmation_code = default_token_generator.make_token(user)
     User.objects.filter(username=username).update(
         confirmation_code=confirmation_code
