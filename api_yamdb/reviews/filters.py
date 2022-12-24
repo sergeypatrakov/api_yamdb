@@ -1,15 +1,18 @@
-import django_filters
+from django_filters import BaseInFilter, CharFilter, FilterSet
 
 from reviews.models import Title
 
 
-class SlugFilterInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
+class SlugFilterInFilter(BaseInFilter, CharFilter):
     pass
 
 
-class GenreFilter(django_filters.FilterSet):
+class GenreFilter(FilterSet):
     genre = SlugFilterInFilter(field_name="genre__slug", lookup_expr='in')
-    category = SlugFilterInFilter(field_name="category__slug", lookup_expr='in')
+    category = SlugFilterInFilter(
+        field_name="category__slug",
+        lookup_expr='in'
+    )
 
     class Meta:
         model = Title
