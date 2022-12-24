@@ -15,7 +15,6 @@ class User(AbstractUser):
     )
     confirmation_code = models.CharField(
         max_length=120,
-        default='000000'
     )
     bio = models.TextField(
         verbose_name="Биография",
@@ -34,7 +33,6 @@ class User(AbstractUser):
             name="Только один пользователь на email."
         )
     ]
-
 
     @property
     def is_user(self):
