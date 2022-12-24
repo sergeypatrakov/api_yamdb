@@ -133,3 +133,5 @@ SIMPLE_JWT = {
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+ALLOWED_USERNAME_RE = r"^[\w.@+-]+\Z"

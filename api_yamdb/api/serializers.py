@@ -1,3 +1,4 @@
+from api_yamdb import settings
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -152,7 +153,10 @@ class GetCodeSerializer(serializers.Serializer):
         max_length=254,
         required=True,
     )
-    username = serializers.RegexField(regex=r"^[\w.@+-]+\Z", max_length=150)
+    username = serializers.RegexField(
+        regex=settings.ALLOWED_USERNAME_RE,
+        max_length=150
+    )
 
     def create(self, validated_data):
         try:
