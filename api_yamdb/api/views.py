@@ -28,8 +28,8 @@ class CategoryViewSet(CreateListDeleteViewSet):
     serializer_class = CategorySerializer
     permission_classes = (AdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
+    search_fields = ("name",)
+    lookup_field = "slug"
 
 
 class GenreViewSet(CreateListDeleteViewSet):
@@ -37,8 +37,8 @@ class GenreViewSet(CreateListDeleteViewSet):
     serializer_class = GenreSerializer
     permission_classes = (AdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
+    search_fields = ("name",)
+    lookup_field = "slug"
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -108,10 +108,11 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.update(request.user, serializer.validated_data)
         else:
             serializer.nonadmin_update(request.user, serializer.validated_data)
+
         return Response(serializer.data, status=HTTPStatus.OK)
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([AllowAny])
 def signup_view(request):
     """Получить код подтверждения на указанный email"""
@@ -120,8 +121,7 @@ def signup_view(request):
     try:
         serializer.is_valid(raise_exception=True)
     except Exception:
-        return Response(serializer.errors,
-                        status=HTTPStatus.BAD_REQUEST)
+        return Response(serializer.errors, status=HTTPStatus.BAD_REQUEST)
 
     user = serializer.save()
     confirmation_code = send_confirmation_mail(user)
@@ -129,13 +129,10 @@ def signup_view(request):
         confirmation_code=confirmation_code
     )
 
-    return Response(
-        request.data,
-        status=HTTPStatus.OK
-    )
+    return Response(request.data, status=HTTPStatus.OK)
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([AllowAny])
 def token_view(request):
     """Получить токен для работы с API по коду подтверждения"""
@@ -148,7 +145,9 @@ def token_view(request):
     if confirmation_code == user.confirmation_code:
         token = AccessToken.for_user(user)
 
-        return Response({'token': f'{token}'}, status=HTTPStatus.OK)
+        return Response({"token": f"{token}"}, status=HTTPStatus.OK)
 
-    return Response({'confirmation_code': 'Неверный код подтверждения'},
-                    status=HTTPStatus.BAD_REQUEST)
+    return Response(
+        {"confirmation_code": "Неверный код подтверждения"},
+        status=HTTPStatus.BAD_REQUEST,
+    )
