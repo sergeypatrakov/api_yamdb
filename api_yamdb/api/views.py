@@ -12,38 +12,41 @@ from reviews.filters import GenreFilter
 from reviews.models import Category, Genre, Review, Title
 from users.models import User
 
-from .mixins import CreateListDeleteViewSet
-from .permissions import (AdminOrReadOnly, AuthorAdminModeratorOrReadOnly,
-                          IsAdminPermission)
+from .permissions import (IsAdmin, IsAdminOrReadOnly,
+                          IsAuthorAdminModeratorOrReadOnly)
 from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, GetCodeSerializer,
                           GetTitleSerializer, GetTokenSerializer,
                           PostPutPatchDeleteTitleSerializer, ReviewSerializer,
                           UserSerializer)
 from .utils import send_confirmation_mail
+from .viewsets import CreateListDeleteViewSet
 
 
 class CategoryViewSet(CreateListDeleteViewSet):
+    """Вьюсет категорий произведений."""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (AdminOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ("name",)
     lookup_field = "slug"
 
 
 class GenreViewSet(CreateListDeleteViewSet):
+    """Вьюсет жанров произведений."""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (AdminOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ("name",)
     lookup_field = "slug"
 
 
 class TitleViewSet(viewsets.ModelViewSet):
+    """Вьюсет произведений."""
     queryset = Title.objects.annotate(rating=db.models.Avg("reviews__score"))
-    permission_classes = (AdminOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = GenreFilter
 
@@ -54,8 +57,9 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
+    """Вьюсет ревью."""
     serializer_class = ReviewSerializer
-    permission_classes = (AuthorAdminModeratorOrReadOnly,)
+    permission_classes = (IsAuthorAdminModeratorOrReadOnly,)
 
     def get_queryset(self):
         title = get_object_or_404(Title, id=self.kwargs.get("title_id"))
@@ -68,8 +72,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    """Вьюсет комментариев."""
     serializer_class = CommentSerializer
-    permission_classes = (AuthorAdminModeratorOrReadOnly,)
+    permission_classes = (IsAuthorAdminModeratorOrReadOnly,)
 
     def get_queryset(self):
         review = get_object_or_404(Review, id=self.kwargs.get("review_id"))
@@ -82,9 +87,10 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    """Вьюсет пользователя."""
     queryset = User.objects.all().order_by("-id")
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenticated, IsAdminPermission)
+    permission_classes = (IsAuthenticated, IsAdmin)
     filter_backends = (filters.SearchFilter,)
     lookup_field = "username"
     search_fields = ("username",)
@@ -96,7 +102,8 @@ class UserViewSet(viewsets.ModelViewSet):
         detail=False,
         url_path="me",
     )
-    def me_user(self, request):
+    def user_selfview(self, request):
+        """Вьюфункция собвственного профиля."""
         if not request.data:
             serializer = self.serializer_class(request.user)
             return Response(serializer.data, status=HTTPStatus.OK)
@@ -115,7 +122,7 @@ class UserViewSet(viewsets.ModelViewSet):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def signup_view(request):
-    """Получить код подтверждения на указанный email"""
+    """Вью регистрации и входа."""
     serializer = GetCodeSerializer(data=request.data)
 
     try:
@@ -135,7 +142,7 @@ def signup_view(request):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def token_view(request):
-    """Получить токен для работы с API по коду подтверждения"""
+    """Вью токена работы с API по коду подтверждения."""
     serializer = GetTokenSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     username = serializer.validated_data.get("username")
