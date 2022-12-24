@@ -1,8 +1,6 @@
 from http import HTTPStatus
 
 from django import db
-from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, viewsets
@@ -22,6 +20,7 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           GetTitleSerializer, GetTokenSerializer,
                           PostPutPatchDeleteTitleSerializer, ReviewSerializer,
                           UserSerializer)
+from .utils import send_confirmation_mail
 
 
 class CategoryViewSet(CreateListDeleteViewSet):
@@ -114,24 +113,22 @@ class UserViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def get_confirmation_code(request):
+def signup_view(request):
     """Получить код подтверждения на указанный email"""
     serializer = GetCodeSerializer(data=request.data)
+
     try:
         serializer.is_valid(raise_exception=True)
     except Exception:
         return Response(serializer.errors,
                         status=HTTPStatus.BAD_REQUEST)
+
     user = serializer.save()
-    email = user.email
-    username = user.username
-    confirmation_code = default_token_generator.make_token(user)
-    User.objects.filter(username=username).update(
+    confirmation_code = send_confirmation_mail(user)
+    User.objects.filter(username=user.username).update(
         confirmation_code=confirmation_code
     )
-    subject = 'Регистрация на YAMDB'
-    message = f'Код подтверждения: {confirmation_code}'
-    send_mail(subject, message, 'YAMDB', [email])
+
     return Response(
         request.data,
         status=HTTPStatus.OK
@@ -140,15 +137,18 @@ def get_confirmation_code(request):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def get_token(request):
+def token_view(request):
     """Получить токен для работы с API по коду подтверждения"""
     serializer = GetTokenSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    username = serializer.validated_data.get('username')
-    confirmation_code = serializer.validated_data.get('confirmation_code')
+    username = serializer.validated_data.get("username")
+    confirmation_code = serializer.validated_data.get("confirmation_code")
     user = get_object_or_404(User, username=username)
+
     if confirmation_code == user.confirmation_code:
         token = AccessToken.for_user(user)
+
         return Response({'token': f'{token}'}, status=HTTPStatus.OK)
+
     return Response({'confirmation_code': 'Неверный код подтверждения'},
                     status=HTTPStatus.BAD_REQUEST)
