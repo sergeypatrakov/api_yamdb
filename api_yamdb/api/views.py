@@ -30,8 +30,8 @@ class CategoryViewSet(CreateListDeleteViewSet):
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ("name",)
-    lookup_field = "slug"
+    search_fields = ('name',)
+    lookup_field = 'slug'
 
 
 class GenreViewSet(CreateListDeleteViewSet):
@@ -40,13 +40,13 @@ class GenreViewSet(CreateListDeleteViewSet):
     serializer_class = GenreSerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ("name",)
-    lookup_field = "slug"
+    search_fields = ('name',)
+    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     """Вьюсет произведений."""
-    queryset = Title.objects.annotate(rating=db.models.Avg("reviews__score"))
+    queryset = Title.objects.annotate(rating=db.models.Avg('reviews__score'))
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = GenreFilter
@@ -63,11 +63,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorAdminModeratorOrReadOnly,)
 
     def get_queryset(self):
-        title = get_object_or_404(Title, id=self.kwargs.get("title_id"))
+        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         return title.reviews.all()
 
     def perform_create(self, serializer):
-        title_id = self.kwargs.get("title_id")
+        title_id = self.kwargs.get('title_id')
         title = get_object_or_404(Title, id=title_id)
         serializer.save(author=self.request.user, title=title)
 
@@ -78,30 +78,30 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorAdminModeratorOrReadOnly,)
 
     def get_queryset(self):
-        review = get_object_or_404(Review, id=self.kwargs.get("review_id"))
+        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
         return review.comments.all()
 
     def perform_create(self, serializer):
-        review_id = self.kwargs.get("review_id")
+        review_id = self.kwargs.get('review_id')
         review = get_object_or_404(Review, id=review_id)
         serializer.save(author=self.request.user, review=review)
 
 
 class UserViewSet(viewsets.ModelViewSet):
     """Вьюсет пользователя."""
-    queryset = User.objects.all().order_by("-id")
+    queryset = User.objects.all().order_by('-id')
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated, IsAdmin)
     filter_backends = (filters.SearchFilter,)
-    lookup_field = "username"
-    search_fields = ("username",)
-    http_method_names = ["get", "post", "patch", "delete"]
+    lookup_field = 'username'
+    search_fields = ('username',)
+    http_method_names = ['get', 'post', 'patch', 'delete']
 
     @action(
-        ["GET", "PATCH"],
+        ['GET', 'PATCH'],
         permission_classes=(IsAuthenticated,),
         detail=False,
-        url_path="me",
+        url_path='me',
     )
     def user_selfview(self, request):
         """Вьюфункция собвственного профиля."""
@@ -120,7 +120,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=HTTPStatus.OK)
 
 
-@api_view(["POST"])
+@api_view(['POST'])
 @permission_classes([AllowAny])
 def signup_view(request):
     """Вью регистрации и входа."""
@@ -146,16 +146,16 @@ def token_view(request):
     """Вью токена работы с API по коду подтверждения."""
     serializer = GetTokenSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    username = serializer.validated_data.get("username")
-    confirmation_code = serializer.validated_data.get("confirmation_code")
+    username = serializer.validated_data.get('username')
+    confirmation_code = serializer.validated_data.get('confirmation_code')
     user = get_object_or_404(User, username=username)
 
     if confirmation_code == user.confirmation_code:
         token = AccessToken.for_user(user)
 
-        return Response({"token": f"{token}"}, status=HTTPStatus.OK)
+        return Response({'token': f'{token}'}, status=HTTPStatus.OK)
 
     return Response(
-        {"confirmation_code": "Неверный код подтверждения"},
+        {'confirmation_code': 'Неверный код подтверждения'},
         status=HTTPStatus.BAD_REQUEST,
     )

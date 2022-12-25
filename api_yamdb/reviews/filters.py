@@ -8,9 +8,9 @@ class SlugFilterInFilter(BaseInFilter, CharFilter):
 
 
 class GenreFilter(FilterSet):
-    genre = SlugFilterInFilter(field_name="genre__slug", lookup_expr='in')
+    genre = SlugFilterInFilter(field_name='genre__slug', lookup_expr='in')
     category = SlugFilterInFilter(
-        field_name="category__slug",
+        field_name='category__slug',
         lookup_expr='in'
     )
 
