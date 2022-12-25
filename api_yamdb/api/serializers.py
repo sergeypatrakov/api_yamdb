@@ -1,8 +1,8 @@
-from api_yamdb import settings
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
+from api_yamdb import settings
 from reviews.models import Category, Comment, Genre, Review, Title, TitleGenre
 from users.models import User
 
