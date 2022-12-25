@@ -62,8 +62,10 @@ class PostPutPatchDeleteTitleSerializer(serializers.ModelSerializer):
         genres = validated_data.pop("genre")
         title = Title.objects.create(**validated_data)
 
-        for genre in genres:
-            TitleGenre.objects.create(genre=genre, title=title)
+        titlegenre_objects = (TitleGenre(genre=genre, title=title)
+                              for genre in genres)
+
+        TitleGenre.objects.bulk_create(titlegenre_objects)
 
         return title
 
