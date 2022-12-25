@@ -180,5 +180,5 @@ class GetCodeSerializer(serializers.Serializer):
 
 
 class GetTokenSerializer(serializers.Serializer):
-    username = serializers.CharField(required=True)
-    confirmation_code = serializers.CharField(required=True)
+    username = serializers.CharField(required=True, max_length=150)
+    confirmation_code = serializers.CharField(required=True, max_length=254)
