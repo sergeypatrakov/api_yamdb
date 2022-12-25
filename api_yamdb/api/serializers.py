@@ -3,8 +3,8 @@ from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from reviews.models import Category, Comment, Genre, Review, Title, TitleGenre
 
+from reviews.models import Category, Comment, Genre, Review, Title, TitleGenre
 from users.models import User
 
 
@@ -49,13 +49,10 @@ class GetTitleSerializer(serializers.ModelSerializer):
 
 class PostPutPatchDeleteTitleSerializer(serializers.ModelSerializer):
     genre = serializers.SlugRelatedField(
-        many=True,
-        slug_field='slug',
-        queryset=Genre.objects.all()
+        many=True, slug_field="slug", queryset=Genre.objects.all()
     )
     category = serializers.SlugRelatedField(
-        slug_field='slug',
-        queryset=Category.objects.all()
+        slug_field="slug", queryset=Category.objects.all()
     )
 
     class Meta:

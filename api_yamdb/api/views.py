@@ -111,7 +111,7 @@ class UserViewSet(viewsets.ModelViewSet):
             request.user, data=request.data, partial=True
         )
         serializer.is_valid(raise_exception=True)
-        if request.user.role == "admin":
+        if request.user.is_admin:
             serializer.update(request.user, serializer.validated_data)
         else:
             serializer.nonadmin_update(request.user, serializer.validated_data)
