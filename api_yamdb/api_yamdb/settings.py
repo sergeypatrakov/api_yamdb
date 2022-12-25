@@ -1,12 +1,12 @@
 import os
 from datetime import timedelta
+from pathlib import Path
 
 from dotenv import find_dotenv, load_dotenv
 
 load_dotenv(find_dotenv())
 
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ['SECRET_KEY']
 
@@ -101,9 +101,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
-
-STATICFILES_DIRS = ('/', )
+STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
 
 AUTH_USER_MODEL = 'users.User'
 
