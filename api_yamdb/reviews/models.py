@@ -7,8 +7,8 @@ from users.models import User
 
 from .validators import validate_correct_year
 
-REVIEW_ORDERING: Tuple[str] = ("-pub_date",)
-COMMENT_ORDERING: Tuple[str] = ("-pub_date",)
+REVIEW_ORDERING: Tuple[str] = ('-pub_date',)
+COMMENT_ORDERING: Tuple[str] = ('-pub_date',)
 REVIEW_TRUNK_LIMIT: int = 16
 COMMENT_TRUNK_LIMIT: int = 16
 
@@ -115,12 +115,12 @@ class Review(models.Model):
 
     class Meta:
         ordering = REVIEW_ORDERING
-        verbose_name = "Ревью"
-        verbose_name_plural = "Ревью"
+        verbose_name = 'Ревью'
+        verbose_name_plural = 'Ревью'
         constraints = [
             models.UniqueConstraint(
-                fields=["author", "title"],
-                name="Только один отзыв на произведение от автора.",
+                fields=['author', 'title'],
+                name='Только один отзыв на произведение от автора.',
             )
         ]
 
@@ -136,7 +136,7 @@ class Comment(models.Model):
         verbose_name="Ревью"
     )
     text = models.TextField(
-        verbose_name="Текст Комментария",
+        verbose_name='Текст Комментария',
     )
     author = models.ForeignKey(
         User,

@@ -10,21 +10,21 @@ from users.models import User
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
-            "name",
-            "slug",
+            'name',
+            'slug',
         )
         model = Category
-        lookup_field = "slug"
+        lookup_field = 'slug'
 
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
-            "name",
-            "slug",
+            'name',
+            'slug',
         )
         model = Genre
-        lookup_field = "slug"
+        lookup_field = 'slug'
 
 
 class GetTitleSerializer(serializers.ModelSerializer):
@@ -35,8 +35,8 @@ class GetTitleSerializer(serializers.ModelSerializer):
     category = CategorySerializer()
 
     class Meta:
-        fields = ("id", "name", "year", "rating",
-                  "description", "genre", "category")
+        fields = ('id', 'name', 'year', 'rating',
+                  'description', 'genre', 'category')
         model = Title
 
 
@@ -49,11 +49,11 @@ class PostPutPatchDeleteTitleSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = ("id", "name", "year", "description", "genre", "category")
+        fields = ('id', 'name', 'year', 'description', 'genre', 'category')
         model = Title
 
     def create(self, validated_data):
-        genres = validated_data.pop("genre")
+        genres = validated_data.pop('genre')
         title = Title.objects.create(**validated_data)
 
         titlegenre_objects = (TitleGenre(genre=genre, title=title)
@@ -66,43 +66,43 @@ class PostPutPatchDeleteTitleSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
-        slug_field="username",
+        slug_field='username',
         read_only=True,
         default=serializers.CurrentUserDefault()
     )
     title = serializers.SlugRelatedField(
-        slug_field="id", many=False, read_only=True)
+        slug_field='id', many=False, read_only=True)
 
     class Meta:
         model = Review
-        fields = ("title", "text", "author", "score", "pub_date", "id")
+        fields = ('title', 'text', 'author', 'score', 'pub_date', 'id')
 
     def validate(self, data):
-        if self.context["request"].method != "POST":
+        if self.context['request'].method != 'POST':
             return data
         title = get_object_or_404(
-            Title, pk=self.context["view"].kwargs.get("title_id"))
-        author = self.context["request"].user
+            Title, pk=self.context['view'].kwargs.get('title_id'))
+        author = self.context['request'].user
         if Review.objects.filter(title_id=title, author=author).exists():
-            raise serializers.ValidationError("Вы уже оставляли отзыв")
+            raise serializers.ValidationError('Вы уже оставляли отзыв')
         return data
 
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
-        slug_field="username",
+        slug_field='username',
         read_only=True,
         default=serializers.CurrentUserDefault()
     )
     review = serializers.SlugRelatedField(
-        slug_field="text",
+        slug_field='text',
         many=False,
         read_only=True
     )
 
     class Meta:
         model = Comment
-        fields = ("review", "text", "author", "pub_date", "id")
+        fields = ('review', 'text', 'author', 'pub_date', 'id')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -116,22 +116,22 @@ class UserSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = ("username", "email", "first_name",
-                  "last_name", "bio", "role")
+        fields = ('username', 'email', 'first_name',
+                  'last_name', 'bio', 'role')
         model = User
 
     def validate_username(self, username):
-        if username == "me":
-            raise serializers.ValidationError("Недопустимое имя пользователя")
+        if username == 'me':
+            raise serializers.ValidationError('Недопустимое имя пользователя')
         duplicated_username = User.objects.filter(username=username).exists()
         if duplicated_username:
             raise serializers.ValidationError(
-                "Пользователь с таким именем уже зарегистрирован"
+                'Пользователь с таким именем уже зарегистрирован'
             )
         return username
 
     def nonadmin_update(self, instance, validated_data):
-        validated_data.pop("role", None)
+        validated_data.pop('role', None)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
@@ -150,32 +150,32 @@ class GetCodeSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         try:
-            user = User.objects.get(username=validated_data["username"])
+            user = User.objects.get(username=validated_data['username'])
         except User.DoesNotExist:
             user = User.objects.create_user(**validated_data)
         return user
 
     def validate(self, data):
 
-        if data.get("email") and data.get("username"):
+        if data.get('email') and data.get('username'):
             if (
-                User.objects.filter(email=data["email"]).exists()
-                and not User.objects.filter(username=data["username"]).exists()
+                User.objects.filter(email=data['email']).exists()
+                and not User.objects.filter(username=data['username']).exists()
             ):
                 raise serializers.ValidationError(
-                    "Недопустимая комбинация username и email."
+                    'Недопустимая комбинация username и email.'
                 )
             if User.objects.filter(username=data["username"]).exists() and (
                 User.objects.get(
-                    username=data["username"]).email != data["email"]
+                    username=data['username']).email != data['email']
             ):
                 raise serializers.ValidationError(
-                    "Email не соответсвует пользователю.")
+                    'Email не соответсвует пользователю.')
         return data
 
     def validate_username(self, username):
-        if username == "me":
-            raise serializers.ValidationError("Недопустимое имя пользователя")
+        if username == 'me':
+            raise serializers.ValidationError('Недопустимое имя пользователя')
         return username
 
 
