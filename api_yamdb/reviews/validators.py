@@ -8,6 +8,6 @@ def validate_correct_year(year):
     current_year = datetime.now().year
     if year > current_year:
         raise ValidationError(
-            'Год написания произведения не может быть больше текущего',
-            params={'value': year},
+            "Год написания произведения не может быть больше текущего",
+            params={"value": year},
         )
