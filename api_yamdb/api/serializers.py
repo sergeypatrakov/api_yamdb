@@ -1,5 +1,4 @@
 from api_yamdb import settings
-from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
@@ -39,11 +38,6 @@ class GetTitleSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "year", "rating",
                   "description", "genre", "category")
         model = Title
-
-    def get_rating(self, obj):
-        if not Review.objects.filter(title_id=obj.id):
-            return None
-        return Review.objects.aggregate(Avg("score"))
 
 
 class PostPutPatchDeleteTitleSerializer(serializers.ModelSerializer):
