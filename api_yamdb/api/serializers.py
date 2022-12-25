@@ -33,8 +33,7 @@ class GetTitleSerializer(serializers.ModelSerializer):
     genre = GenreSerializer(
         many=True,
     )
-    category = CategorySerializer(
-    )
+    category = CategorySerializer()
 
     class Meta:
         fields = ("id", "name", "year", "rating",
