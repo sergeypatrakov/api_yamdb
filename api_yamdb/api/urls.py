@@ -7,22 +7,22 @@ from .views import (CategoryViewSet, CommentViewSet, GenreViewSet,
 
 router = routers.DefaultRouter()
 
-router.register("categories", CategoryViewSet)
-router.register("genres", GenreViewSet)
-router.register("titles", TitleViewSet)
-router.register("users", UserViewSet)
+router.register('categories', CategoryViewSet)
+router.register('genres', GenreViewSet)
+router.register('titles', TitleViewSet)
+router.register('users', UserViewSet)
 router.register(
-    r"titles/(?P<title_id>\d+)/reviews",
+    r'titles/(?P<title_id>\d+)/reviews',
     ReviewViewSet,
-    basename="title_id")
+    basename='title_id')
 router.register(
-    r"titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments",
+    r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
     CommentViewSet,
-    basename="review_id",
+    basename='review_id',
 )
 
 urlpatterns = [
-    path("v1/auth/signup/", signup_view, name="signup"),
-    path("v1/auth/token/", token_view, name="token"),
-    path("v1/", include(router.urls)),
+    path('v1/auth/signup/', signup_view, name='signup'),
+    path('v1/auth/token/', token_view, name='token'),
+    path('v1/', include(router.urls)),
 ]
